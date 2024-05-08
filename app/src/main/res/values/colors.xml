@@ -2,4 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="green">#0dba44</color>
+    <color name="_7d7d7d">#7d7d7d</color>
+    <color name="greenDisabled">#87a38f</color>
+    <color name="greenEnabled">#25a147</color>
+    <color name="toolbar_bg">#4e4f4e</color>
 </resources>
