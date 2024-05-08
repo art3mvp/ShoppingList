@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Shopping List</string>
+    <string name="add_new_elements">add new elements</string>
+    <string name="product_name">Product name</string>
+    <string name="quantity">quantity</string>
+    <string name="products_to_buy">Products to buy:</string>
+    <string name="back_arrow">back arrow</string>
+    <string name="shopping_list">Shopping list</string>
+    <string name="about_the_app">About the app</string>
+    <string name="settings">Settings</string>
 </resources>
