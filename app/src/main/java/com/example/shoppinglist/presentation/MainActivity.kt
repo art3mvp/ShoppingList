@@ -1,14 +1,8 @@
 package com.example.shoppinglist.presentation
 
-import android.content.ClipData.Item
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toolbar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -18,8 +12,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
-import com.example.shoppinglist.domain.ShopItem
-import java.util.zip.Inflater
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,7 +37,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
         }
+        val fabAddProduct = findViewById<FloatingActionButton>(R.id.fabAddProducts)
 
+        fabAddProduct.setOnClickListener {
+            val intent = ShopItemActivity.newIntentAddItem(this)
+            startActivity(intent)
+        }
     }
 
     private fun setUpRecyclerView() {
@@ -64,6 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         onClickListeners()
         setUpSwipeShopItem(recyclerViewShopList)
+
     }
 
     private fun setUpSwipeShopItem(recyclerViewShopList: RecyclerView?) {
@@ -91,7 +90,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         shopListAdapter.onShopItemClickListener = {
-            Log.d("MainActivity", it.toString())
+            Log.d("my_tag", it.id.toString())
+            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
 
     }
