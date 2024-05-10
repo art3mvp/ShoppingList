@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,15 +17,8 @@ import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
-
-    private lateinit var viewModel: ShopItemViewModel
-    private lateinit var textInputLayoutName: TextInputLayout
-    private lateinit var textInputLayoutQuantity: TextInputLayout
-    private lateinit var editTextName: TextInputEditText
-    private lateinit var editTextQuantity: TextInputEditText
-    private lateinit var buttonSave: Button
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -33,80 +27,27 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_shop_item)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.shop_item_container)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
         parseIntent()
-        initViews()
-        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        viewModelObservers()
-        onTextChangedListeners()
-        launchRightVersion()
-
+        if (savedInstanceState == null) {
+            launchRightVersion()
+        }
     }
 
     private fun launchRightVersion() {
-        when (screenMode) {
-            MODE_EDIT -> launchEditMode()
-            MODE_ADD -> launchAddMode()
+        val fragment = when (screenMode) {
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            else -> throw RuntimeException("Unknown screen mode!")
         }
-    }
-
-    private fun launchAddMode() {
-        buttonSave.setOnClickListener {
-            viewModel.addShopItem(
-                editTextName.text.toString(),
-                editTextQuantity.text.toString()
-            )
-        }
-    }
-
-    private fun launchEditMode() {
-        viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this) {
-            editTextName.setText(it.name)
-            editTextQuantity.setText(it.count.toString())
-        }
-        buttonSave.setOnClickListener {
-            viewModel.editShopItem(
-                editTextName.text.toString(),
-                editTextQuantity.text.toString()
-            )
-        }
-    }
-
-    private fun viewModelObservers() {
-        viewModel.shouldFinishActivity.observe(this) {
-            finish()
-        }
-        viewModel.errorInputCount.observe(this) {
-            val message = if (it) {
-                "Empty quantity field!"
-            } else {
-                null
-            }
-            textInputLayoutQuantity.error = message
-        }
-        viewModel.errorInputName.observe(this) {
-            val message = if (it) {
-                "Empty name field!"
-            } else {
-                null
-            }
-            textInputLayoutName.error = message
-        }
-    }
-
-    private fun onTextChangedListeners() {
-        editTextName.doOnTextChanged { _, _, _, _ ->
-            viewModel.resetErrorInputName()
-        }
-        editTextQuantity.doOnTextChanged { _, _, _, _ ->
-            viewModel.resetErrorInputName()
-        }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.shop_item_container, fragment)
+            .commit()
     }
 
     private fun parseIntent() {
@@ -128,12 +69,9 @@ class ShopItemActivity : AppCompatActivity() {
         Log.d("my_tag", "screen mode: $screenMode\nitem id: $shopItemId")
     }
 
-    private fun initViews() {
-        textInputLayoutName = findViewById(R.id.textInputLayoutName)
-        textInputLayoutQuantity = findViewById(R.id.textInputLayoutQuantity)
-        editTextName = findViewById(R.id.editTextName)
-        editTextQuantity = findViewById(R.id.editTextQuantity)
-        buttonSave = findViewById(R.id.buttonSave)
+    override fun onEditingFinished() {
+        Toast.makeText(this, "success", Toast.LENGTH_SHORT).show()
+        finish()
     }
 
     companion object {
