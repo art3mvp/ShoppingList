@@ -13,12 +13,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.ActivityShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
+   private lateinit var binding: ActivityShopItemBinding
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -26,8 +28,10 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_shop_item)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.shop_item_container)) { v, insets ->
+        binding = ActivityShopItemBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.shopItemContainer) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -60,13 +64,11 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         }
         screenMode = mode
         if (screenMode == MODE_EDIT) {
-            Log.d("my_tag", intent.hasExtra(EXTRA_ITEM_ID).toString())
             if (!intent.hasExtra(EXTRA_ITEM_ID)) {
                 throw RuntimeException("Param item id is absent")
             }
             shopItemId = intent.getIntExtra(EXTRA_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
-        Log.d("my_tag", "screen mode: $screenMode\nitem id: $shopItemId")
     }
 
     override fun onEditingFinished() {
