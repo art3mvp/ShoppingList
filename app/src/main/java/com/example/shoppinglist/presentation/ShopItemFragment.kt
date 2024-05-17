@@ -111,7 +111,7 @@ class ShopItemFragment: Fragment() {
             viewModel.resetErrorInputName()
         }
         binding.editTextQuantity.doOnTextChanged { _, _, _, _ ->
-            viewModel.resetErrorInputName()
+            viewModel.resetErrorInputCount()
         }
     }
 
