@@ -65,4 +65,9 @@ dependencies {
     val lifecycle_version = "2.8.0"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+
+    //dagger
+    val dagger_version = "2.51.1"
+    implementation("com.google.dagger:dagger:$dagger_version")
+    kapt("com.google.dagger:dagger-compiler:$dagger_version")
 }
