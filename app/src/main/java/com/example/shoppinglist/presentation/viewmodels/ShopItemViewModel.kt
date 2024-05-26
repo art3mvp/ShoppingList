@@ -1,34 +1,28 @@
-package com.example.shoppinglist.presentation
+package com.example.shoppinglist.presentation.viewmodels
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.shoppinglist.data.ShopListRepositoryImpl
+import com.example.shoppinglist.data.repository.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.AddShopItemUseCase
 import com.example.shoppinglist.domain.EditShopItemUseCase
 import com.example.shoppinglist.domain.GetShopItemUseCase
 import com.example.shoppinglist.domain.ShopItem
-import com.google.android.material.textfield.TextInputLayout.LengthCounter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ShopItemViewModel(application: Application): AndroidViewModel(application) {
+class ShopItemViewModel @Inject constructor(
+    private val getShopItemUseCase: GetShopItemUseCase,
+    private val addShopItemUseCase: AddShopItemUseCase,
+    private val editShopItemUseCase: EditShopItemUseCase
+) : ViewModel() {
 
-    private val repo = ShopListRepositoryImpl(application)
-
-    private val getShopItemUseCase = GetShopItemUseCase(repo)
-    private val addShopItemUseCase = AddShopItemUseCase(repo)
-    private val editShopItemUseCase = EditShopItemUseCase(repo)
     private val _shopItem = MutableLiveData<ShopItem>()
     private val _shouldFinishActivity = MutableLiveData<Unit>()
     val shouldFinishActivity: LiveData<Unit>
-        get () = _shouldFinishActivity
+        get() = _shouldFinishActivity
 
     val shopItem: LiveData<ShopItem>
         get() = _shopItem
@@ -74,10 +68,11 @@ class ShopItemViewModel(application: Application): AndroidViewModel(application)
     }
 
     private fun parseName(inputName: String?): String {
-        return inputName?.trim()?:""
+        return inputName?.trim() ?: ""
     }
+
     private fun parseCount(inputCount: String?): Int {
-        return inputCount?.trim()?.toIntOrNull()?:0
+        return inputCount?.trim()?.toIntOrNull() ?: 0
     }
 
     private fun finishWork() {
@@ -90,10 +85,10 @@ class ShopItemViewModel(application: Application): AndroidViewModel(application)
         }
 
         if (name.isBlank()) {
-             _errorInputName.value = true
+            _errorInputName.value = true
         }
         if (count <= 0) {
-             _errorInputCount.value = true
+            _errorInputCount.value = true
         }
         return false
     }
